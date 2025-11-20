@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENDPRO - Free NFT Mint</title>
+    <!-- Farcaster Frame Meta Tags -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
+    <meta property="fc:frame:button:1" content="Mint Free NFT" />
+    <meta property="fc:frame:button:1:action" content="link" />
+    <meta property="fc:frame:button:1:target" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="ENDPRO - Free NFT Mint" />
+    <meta property="og:description" content="Mint your free ENDPRO NFT on Base blockchain" />
+    <meta property="og:image" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
+    <meta property="og:type" content="website" />
+
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
+    <meta property="fc:frame:button:1" content="Mint Free NFT" />
+    <meta property="fc:frame:button:1:action" content="link" />
+    <meta property="fc:frame:button:1:target" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ENDPRO - Free NFT Mint" />
+    <meta property="og:description" content="Mint your free ENDPRO NFT on Base mainnet" />
+    <meta property="og:image" content="https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .wallet-info {
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .wallet-info.connected {
+            display: block;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #1976d2;
+        }
+
+        .button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .button-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            display: block;
+        }
+
+        .tx-link {
+            color: inherit;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .farcaster-badge {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .farcaster-badge img {
+            height: 24px;
+            opacity: 0.6;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>ENDPRO</h1>
+            <p>Free NFT Mint on Base</p>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-item">
+                <span class="stat-label">Total Whitelist:</span>
+                <span class="stat-value" id="totalWhitelisted">Loading...</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Network:</span>
+                <span class="stat-value">Base Mainnet</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value" id="contractStatus">Checking...</span>
+            </div>
+        </div>
+
+        <div class="wallet-info" id="walletInfo">
+            <div class="stat-label" style="margin-bottom: 5px;">Connected Wallet:</div>
+            <div class="wallet-address" id="walletAddress"></div>
+        </div>
+
+        <button class="button button-primary" id="connectButton" onclick="connectWallet()">
+            Connect Wallet
+        </button>
+
+        <button class="button button-primary" id="mintButton" onclick="mintNFT()" style="display: none;" disabled>
+            Mint Free NFT
+        </button>
+
+        <button class="button button-secondary" id="disconnectButton" onclick="disconnectWallet()" style="display: none;">
+            Disconnect
+        </button>
+
+        <div class="status" id="status"></div>
+
+        <div class="farcaster-badge">
+            <p style="font-size: 12px; color: #999; margin-bottom: 10px;">Powered by Farcaster</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+ <script>
+    // Contract Configuration
+    const CONTRACT_ADDRESS = '0xfcd7fd9cbC1db3f6Df77994e5AC1ef512E5Ac87A';
+    const API_BASE_URL = 'https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app';
+    
+    const CONTRACT_ABI = [
+        "function safeMint(string memory uri, bytes32[] calldata merkleProof) external payable",
+        "function hasMinted(address account) external view returns (bool)",
+        "function paused() external view returns (bool)",
+        "function merkleRoot() external view returns (bytes32)"
+    ];
+
+    let provider = null;
+    let signer = null;
+    let contract = null;
+    let userAddress = null;
+
+    // Load Stats
+    async function loadStats() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/stats`);
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('totalWhitelisted').textContent = data.totalWhitelisted.toLocaleString();
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+            document.getElementById('totalWhitelisted').textContent = '9,999';
+        }
+    }
+
+    // Connect Wallet
+    window.connectWallet = async function() {
+        try {
+            showStatus('Connecting wallet...', 'info');
+
+            if (!window.ethereum) {
+                throw new Error('Please install MetaMask or Rabby Wallet');
+            }
+
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            userAddress = await signer.getAddress();
+
+            // Check network
+            const network = await provider.getNetwork();
+            console.log('Connected to network:', network);
+            
+            if (network.chainId !== 8453) {
+                throw new Error('Please switch to Base mainnet (Chain ID: 8453)');
+            }
+
+            contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+            // Update UI
+            document.getElementById('walletAddress').textContent = userAddress;
+            document.getElementById('walletInfo').classList.add('connected');
+            document.getElementById('connectButton').style.display = 'none';
+            document.getElementById('mintButton').style.display = 'block';
+            document.getElementById('disconnectButton').style.display = 'block';
+
+            // Check if already minted
+            const hasMinted = await contract.hasMinted(userAddress);
+            if (hasMinted) {
+                showStatus('You have already minted your NFT!', 'info');
+                document.getElementById('mintButton').disabled = true;
+            } else {
+                document.getElementById('mintButton').disabled = false;
+                showStatus('Connected! Ready to mint.', 'success');
+            }
+
+            // Check contract status
+            const isPaused = await contract.paused();
+            document.getElementById('contractStatus').textContent = isPaused ? 'Paused' : 'Active';
+            
+        } catch (error) {
+            console.error('Connection error:', error);
+            showStatus(`Error: ${error.message}`, 'error');
+        }
+    }
+
+    // Mint NFT
+    window.mintNFT = async function() {
+        if (!userAddress) {
+            showStatus('Please connect wallet first', 'error');
+            return;
+        }
+
+        try {
+            const mintButton = document.getElementById('mintButton');
+            mintButton.disabled = true;
+            mintButton.innerHTML = '<span class="loading"></span> Minting...';
+            
+            showStatus('Getting merkle proof...', 'info');
+
+            // Get proof from API
+            const response = await fetch(`${API_BASE_URL}/api/proof?address=${userAddress}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            console.log('API Response:', data);
+
+            if (!data.whitelisted) {
+                throw new Error('Your wallet is not on the whitelist');
+            }
+
+            if (!data.proof || !Array.isArray(data.proof)) {
+                throw new Error('Invalid proof format from API');
+            }
+
+            showStatus('Submitting transaction...', 'info');
+
+            // URI для метаданных NFT
+            const tokenURI = "https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/metadata.json";
+
+            // Send transaction с правильными параметрами
+            const tx = await contract.safeMint(tokenURI, data.proof, {
+                gasLimit: 300000
+            });
+            
+            showStatus('Waiting for confirmation...', 'info');
+            
+            const receipt = await tx.wait();
+            
+            const txLink = `https://basescan.org/tx/${receipt.transactionHash}`;
+            showStatus(`Success! <a href="${txLink}" target="_blank" class="tx-link">View on BaseScan</a>`, 'success');
+            
+            mintButton.innerHTML = '✓ Minted!';
+            
+        } catch (error) {
+            console.error('Mint error:', error);
+            let errorMsg = error.message;
+            
+            if (errorMsg.includes('not on the whitelist')) {
+                errorMsg = 'Your wallet is not on the whitelist';
+            } else if (errorMsg.includes('Already minted')) {
+                errorMsg = 'You have already minted your NFT';
+            } else if (errorMsg.includes('user rejected')) {
+                errorMsg = 'Transaction cancelled';
+            } else if (errorMsg.includes('HTTP error')) {
+                errorMsg = 'Failed to connect to API. Please try again.';
+            }
+            
+            showStatus(`Error: ${errorMsg}`, 'error');
+            
+            const mintButton = document.getElementById('mintButton');
+            mintButton.disabled = false;
+            mintButton.innerHTML = 'Mint Free NFT';
+        }
+    }
+
+    // Disconnect Wallet
+    window.disconnectWallet = function() {
+        userAddress = null;
+        provider = null;
+        signer = null;
+        contract = null;
+        
+        document.getElementById('walletInfo').classList.remove('connected');
+        document.getElementById('connectButton').style.display = 'block';
+        document.getElementById('mintButton').style.display = 'none';
+        document.getElementById('disconnectButton').style.display = 'none';
+        document.getElementById('status').style.display = 'none';
+    }
+
+    // Show Status
+    function showStatus(message, type) {
+        const statusEl = document.getElementById('status');
+        statusEl.className = `status ${type}`;
+        statusEl.innerHTML = message;
+    }
+
+    // Initialize on load
+    window.addEventListener('load', async () => {
+        await loadStats();
+    });
+</script>
+
+</body>
+</html>

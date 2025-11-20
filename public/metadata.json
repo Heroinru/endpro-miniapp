@@ -1,0 +1,19 @@
+{
+  "name": "ENDPRO NFT",
+  "description": "Free NFT from ENDPRO collection on Base",
+  "image": "https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/og-image.png",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "ENDPRO"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Whitelist Mint"
+    }
+  ]
+}
