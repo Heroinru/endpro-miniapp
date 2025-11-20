@@ -1,8 +1,1 @@
-{
-  "name": "endpro-miniapp",
-  "version": "1.0.0",
-  "description": "ENDPRO NFT Mint App",
-  "scripts": {
-    "dev": "python3 -m http.server 8000"
-  }
-}
+{}
