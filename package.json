@@ -1,18 +1,8 @@
 {
   "name": "endpro-miniapp",
   "version": "1.0.0",
-  "description": "ENDPRO NFT Mint App with Farcaster Integration",
-  "main": "index.html",
+  "description": "ENDPRO NFT Mint App",
   "scripts": {
-    "dev": "python3 -m http.server 8000",
-    "generate-tree": "node api/generate-merkle-tree.js"
-  },
-  "dependencies": {
-    "ethers": "^5.7.2",
-    "merkletreejs": "^0.3.11",
-    "keccak256": "^1.0.6"
-  },
-  "engines": {
-    "node": ">=18.x"
+    "dev": "python3 -m http.server 8000"
   }
 }
