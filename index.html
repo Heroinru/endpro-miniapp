@@ -292,19 +292,10 @@
     let contract = null;
     let userAddress = null;
 
-    // Load Stats
+    // Load Stats (без API - используем статичное значение)
     async function loadStats() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/stats`);
-            const data = await response.json();
-            
-            if (data.success) {
-                document.getElementById('totalWhitelisted').textContent = data.totalWhitelisted.toLocaleString();
-            }
-        } catch (error) {
-            console.error('Error loading stats:', error);
-            document.getElementById('totalWhitelisted').textContent = '9,999';
-        }
+        // Просто показываем заглушку, без вызова API
+        document.getElementById('totalWhitelisted').textContent = '10,000';
     }
 
     // Connect Wallet
@@ -358,110 +349,71 @@
         }
     }
 
-// Mint NFT
-window.mintNFT = async function() {
-    if (!userAddress) {
-        showStatus('Please connect wallet first', 'error');
-        return;
-    }
-
-    const mintButton = document.getElementById('mintButton');
-    
-    try {
-        mintButton.disabled = true;
-        mintButton.innerHTML = '<span class="loading"></span> Checking...';
-        
-        // ===== 1. ПРОВЕРКА PRO NFT (БЕЗ API) =====
-        showStatus('🔍 Checking Farcaster PRO NFT...', 'info');
-        
-        let hasProNFT = false;
-        try {
-            const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
-            const balance = await proContract.balanceOf(userAddress, 1);
-            hasProNFT = balance.gt(0);
-        } catch (proError) {
-            console.error('PRO NFT check error:', proError);
-            hasProNFT = false;
-        }
-        
-        if (!hasProNFT) {
-            showStatus('❌ You need Farcaster PRO NFT to mint!<br><br>Get it at <a href="https://warpcast.com/~/settings/pro" target="_blank" class="tx-link">warpcast.com/~/settings/pro</a>', 'error');
-            mintButton.disabled = false;
-            mintButton.innerHTML = 'Mint Free NFT';
+    // Mint NFT (БЕЗ API - только проверка PRO NFT)
+    window.mintNFT = async function() {
+        if (!userAddress) {
+            showStatus('Please connect wallet first', 'error');
             return;
         }
-        
-        showStatus('✅ PRO NFT verified! Preparing mint...', 'success');
-        
-        // ===== 2. ПОЛУЧЕНИЕ MERKLE PROOF =====
-        mintButton.innerHTML = '<span class="loading"></span> Minting...';
-        showStatus('Getting merkle proof...', 'info');
 
-        let proofData;
+        const mintButton = document.getElementById('mintButton');
+        
         try {
-            const response = await fetch(`${API_BASE_URL}/api/proof?address=${userAddress}`);
+            mintButton.disabled = true;
+            mintButton.innerHTML = '<span class="loading"></span> Checking...';
             
-            if (!response.ok) {
-                throw new Error(`API returned status ${response.status}`);
+            // Проверка владения PRO NFT
+            showStatus('🔍 Checking Farcaster PRO NFT...', 'info');
+            
+            const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
+            const balance = await proContract.balanceOf(userAddress, 1);
+            
+            if (balance.eq(0)) {
+                showStatus('❌ You need Farcaster PRO NFT to mint!<br><br>Get it at <a href="https://warpcast.com/~/settings/pro" target="_blank" class="tx-link">warpcast.com/~/settings/pro</a>', 'error');
+                mintButton.disabled = false;
+                mintButton.innerHTML = 'Mint Free NFT';
+                return;
             }
             
-            proofData = await response.json();
+            showStatus('✅ PRO NFT verified! Preparing mint...', 'success');
             
-            if (!proofData.whitelisted) {
-                throw new Error('Your wallet is not on the whitelist');
-            }
+            // Минт БЕЗ Merkle Proof (пустой массив)
+            mintButton.innerHTML = '<span class="loading"></span> Minting...';
+            showStatus('Submitting transaction...', 'info');
 
-            if (!proofData.proof || !Array.isArray(proofData.proof)) {
-                throw new Error('Invalid proof format from API');
+            const tokenURI = "https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/metadata.json";
+
+            // Минт с ПУСТЫМ массивом proof (без whitelist)
+            const tx = await contract.safeMint(tokenURI, [], {
+                gasLimit: 300000
+            });
+            
+            showStatus('⏳ Waiting for confirmation...', 'info');
+            
+            const receipt = await tx.wait();
+            
+            const txLink = `https://basescan.org/tx/${receipt.transactionHash}`;
+            showStatus(`🎉 Success! <a href="${txLink}" target="_blank" class="tx-link">View on BaseScan</a>`, 'success');
+            
+            mintButton.innerHTML = '✓ Minted!';
+            mintButton.disabled = true;
+            
+        } catch (error) {
+            console.error('Mint error:', error);
+            let errorMsg = error.message;
+            
+            if (errorMsg.includes('user rejected')) {
+                errorMsg = 'Transaction cancelled';
+            } else if (errorMsg.includes('MerkleProof')) {
+                errorMsg = 'Your smart contract requires whitelist. Please set up API or disable whitelist in contract.';
             }
-        } catch (apiError) {
-            console.error('API Error:', apiError);
-            throw new Error('Failed to get whitelist proof. Please contact support.');
+            
+            showStatus(`❌ Error: ${errorMsg}`, 'error');
+            
+            mintButton.disabled = false;
+            mintButton.innerHTML = 'Mint Free NFT';
         }
-
-        // ===== 3. МИНТ NFT =====
-        showStatus('Submitting transaction...', 'info');
-
-        const tokenURI = "https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/metadata.json";
-
-        const tx = await contract.safeMint(tokenURI, proofData.proof, {
-            gasLimit: 300000
-        });
-        
-        showStatus('⏳ Waiting for confirmation...', 'info');
-        
-        const receipt = await tx.wait();
-        
-        const txLink = `https://basescan.org/tx/${receipt.transactionHash}`;
-        showStatus(`🎉 Success! <a href="${txLink}" target="_blank" class="tx-link">View on BaseScan</a>`, 'success');
-        
-        mintButton.innerHTML = '✓ Minted!';
-        mintButton.disabled = true;
-        
-    } catch (error) {
-        console.error('Mint error:', error);
-        let errorMsg = error.message;
-        
-        // Понятные сообщения об ошибках
-        if (errorMsg.includes('whitelist proof')) {
-            errorMsg = 'Cannot verify whitelist. API is unavailable.';
-        } else if (errorMsg.includes('not on the whitelist')) {
-            errorMsg = 'Your wallet is not on the whitelist';
-        } else if (errorMsg.includes('Already minted')) {
-            errorMsg = 'You have already minted your NFT';
-        } else if (errorMsg.includes('user rejected')) {
-            errorMsg = 'Transaction cancelled';
-        } else if (errorMsg.includes('API returned status')) {
-            errorMsg = 'Whitelist API is currently unavailable. Please try again later.';
-        }
-        
-        showStatus(`❌ Error: ${errorMsg}`, 'error');
-        
-        mintButton.disabled = false;
-        mintButton.innerHTML = 'Mint Free NFT';
     }
-}
-
 
     // Disconnect Wallet
     window.disconnectWallet = function() {
