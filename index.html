@@ -260,6 +260,34 @@
         "function merkleRoot() external view returns (bytes32)"
     ];
 
+    // ===== ДОБАВЛЕНО: Farcaster PRO NFT Configuration =====
+    const PRO_NFT_CONTRACT = '0x61886e7d61F4086AdA1829880AF440AA0DE3fc96';
+    const PRO_NFT_ABI = [
+        {
+            "inputs": [
+                {"internalType": "address", "name": "account", "type": "address"},
+                {"internalType": "uint256", "name": "id", "type": "uint256"}
+            ],
+            "name": "balanceOf",
+            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ];
+
+    // ===== ДОБАВЛЕНО: Функция проверки владения PRO NFT =====
+    async function checkProNFT(address, provider) {
+        try {
+            const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
+            const balance = await proContract.balanceOf(address, 1); // Token ID = 1
+            return balance.gt(0); // Возвращает true если баланс > 0
+        } catch (error) {
+            console.error('PRO NFT check failed:', error);
+            return false;
+        }
+    }
+    // ===== КОНЕЦ ДОБАВЛЕННОГО КОДА =====
+
     let provider = null;
     let signer = null;
     let contract = null;
@@ -343,6 +371,18 @@
             mintButton.disabled = true;
             mintButton.innerHTML = '<span class="loading"></span> Minting...';
             
+            // ===== ДОБАВЛЕНО: Проверка владения PRO NFT =====
+            showStatus('🔍 Checking Farcaster PRO NFT...', 'info');
+            
+            const hasProNFT = await checkProNFT(userAddress, provider);
+            
+            if (!hasProNFT) {
+                throw new Error('You need Farcaster PRO NFT to mint! Get it at warpcast.com/~/settings/pro');
+            }
+            
+            showStatus('✅ PRO NFT verified! Preparing mint...', 'success');
+            // ===== КОНЕЦ ДОБАВЛЕННОГО КОДА =====
+            
             showStatus('Getting merkle proof...', 'info');
 
             // Get proof from API
@@ -387,7 +427,10 @@
             console.error('Mint error:', error);
             let errorMsg = error.message;
             
-            if (errorMsg.includes('not on the whitelist')) {
+            // ===== ДОБАВЛЕНО: Обработка ошибки PRO NFT =====
+            if (errorMsg.includes('need Farcaster PRO NFT')) {
+                errorMsg = 'You need Farcaster PRO NFT to mint! Get it at warpcast.com/~/settings/pro';
+            } else if (errorMsg.includes('not on the whitelist')) {
                 errorMsg = 'Your wallet is not on the whitelist';
             } else if (errorMsg.includes('Already minted')) {
                 errorMsg = 'You have already minted your NFT';
