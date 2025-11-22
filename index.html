@@ -260,7 +260,7 @@
         "function merkleRoot() external view returns (bytes32)"
     ];
 
-    // ===== ДОБАВЛЕНО: Farcaster PRO NFT Configuration =====
+    // Farcaster PRO NFT Configuration
     const PRO_NFT_CONTRACT = '0x61886e7d61F4086AdA1829880AF440AA0DE3fc96';
     const PRO_NFT_ABI = [
         {
@@ -275,7 +275,7 @@
         }
     ];
 
-    // ===== ДОБАВЛЕНО: Функция проверки владения PRO NFT =====
+    // Функция проверки владения PRO NFT
     async function checkProNFT(address, provider) {
         try {
             const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
@@ -286,7 +286,6 @@
             return false;
         }
     }
-    // ===== КОНЕЦ ДОБАВЛЕННОГО КОДА =====
 
     let provider = null;
     let signer = null;
@@ -366,23 +365,27 @@
             return;
         }
 
+        const mintButton = document.getElementById('mintButton');
+        
         try {
-            const mintButton = document.getElementById('mintButton');
             mintButton.disabled = true;
-            mintButton.innerHTML = '<span class="loading"></span> Minting...';
+            mintButton.innerHTML = '<span class="loading"></span> Checking...';
             
-            // ===== ДОБАВЛЕНО: Проверка владения PRO NFT =====
+            // Проверка владения PRO NFT
             showStatus('🔍 Checking Farcaster PRO NFT...', 'info');
             
             const hasProNFT = await checkProNFT(userAddress, provider);
             
             if (!hasProNFT) {
-                throw new Error('You need Farcaster PRO NFT to mint! Get it at warpcast.com/~/settings/pro');
+                showStatus('❌ You need Farcaster PRO NFT to mint!<br><br>Get it at <a href="https://warpcast.com/~/settings/pro" target="_blank" class="tx-link">warpcast.com/~/settings/pro</a>', 'error');
+                mintButton.disabled = false;
+                mintButton.innerHTML = 'Mint Free NFT';
+                return; // ВАЖНО: выходим из функции
             }
             
             showStatus('✅ PRO NFT verified! Preparing mint...', 'success');
-            // ===== КОНЕЦ ДОБАВЛЕННОГО КОДА =====
             
+            mintButton.innerHTML = '<span class="loading"></span> Minting...';
             showStatus('Getting merkle proof...', 'info');
 
             // Get proof from API
@@ -422,15 +425,13 @@
             showStatus(`Success! <a href="${txLink}" target="_blank" class="tx-link">View on BaseScan</a>`, 'success');
             
             mintButton.innerHTML = '✓ Minted!';
+            mintButton.disabled = true;
             
         } catch (error) {
             console.error('Mint error:', error);
             let errorMsg = error.message;
             
-            // ===== ДОБАВЛЕНО: Обработка ошибки PRO NFT =====
-            if (errorMsg.includes('need Farcaster PRO NFT')) {
-                errorMsg = 'You need Farcaster PRO NFT to mint! Get it at warpcast.com/~/settings/pro';
-            } else if (errorMsg.includes('not on the whitelist')) {
+            if (errorMsg.includes('not on the whitelist')) {
                 errorMsg = 'Your wallet is not on the whitelist';
             } else if (errorMsg.includes('Already minted')) {
                 errorMsg = 'You have already minted your NFT';
@@ -440,9 +441,8 @@
                 errorMsg = 'Failed to connect to API. Please try again.';
             }
             
-            showStatus(`Error: ${errorMsg}`, 'error');
+            showStatus(`❌ Error: ${errorMsg}`, 'error');
             
-            const mintButton = document.getElementById('mintButton');
             mintButton.disabled = false;
             mintButton.innerHTML = 'Mint Free NFT';
         }
