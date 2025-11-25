@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // CORS headers для Farcaster
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -47,10 +47,18 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Проверяем наличие PRO подписки
-    const hasPro = user.active_status === 'active' && user.power_badge === true;
+    // ИСПРАВЛЕНО: Проверяем viewer_context.following (это означает PRO)
+    // Или проверяем наличие active_status === 'active'
+    const hasPro = user.viewer_context?.following || user.active_status === 'active';
     
-    console.log('✅ FID:', fid, 'Username:', user.username, 'Has PRO:', hasPro);
+    console.log('✅ User data:', {
+      fid,
+      username: user.username,
+      active_status: user.active_status,
+      power_badge: user.power_badge,
+      viewer_following: user.viewer_context?.following,
+      hasPro
+    });
     
     return res.status(200).json({ 
       hasPro,
