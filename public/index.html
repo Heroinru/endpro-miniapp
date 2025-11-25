@@ -232,25 +232,37 @@
     let userFid = null;
 
 // Farcaster Frame context
-let frameContext = null; // ← НОВАЯ ПЕРЕМЕННАЯ
+let frameContext = null;
 
 // Initialize Farcaster Frame
-async function initFrame() { // ← НОВАЯ ФУНКЦИЯ (весь блок)
+async function initFrame() {
     try {
         if (typeof window.FrameSDK !== 'undefined') {
+            console.log('🔄 Initializing Farcaster SDK...');
+            
             await window.FrameSDK.ready();
+            console.log('✅ SDK ready');
+            
+            // Сообщаем что приложение загружено
             window.FrameSDK.actions.ready();
+            console.log('✅ App ready signal sent');
+            
             frameContext = await window.FrameSDK.context();
             
             if (frameContext?.user?.fid) {
                 userFid = frameContext.user.fid;
                 console.log('✅ Farcaster FID:', userFid);
+            } else {
+                console.log('⚠️ No FID in context');
             }
+        } else {
+            console.log('⚠️ FrameSDK not available');
         }
     } catch (error) {
-        console.log('⚠️ Not running in Farcaster Frame:', error);
+        console.error('❌ Frame init error:', error);
     }
 }
+
     // Connect Wallet
     async function connectWallet() {
         try {
