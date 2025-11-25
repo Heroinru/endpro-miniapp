@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -26,8 +25,9 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    console.log('🔍 Checking PRO for FID:', fid);
+    console.log('🔍 Checking PRO subscription for FID:', fid);
 
+    // Используем Neynar API для получения полной информации о пользователе
     const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
       headers: {
         'accept': 'application/json',
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      console.error('❌ Neynar API error:', response.status);
+      console.error('❌ Neynar API error:', response.status, await response.text());
       return res.status(500).json({ error: 'Failed to fetch user data' });
     }
 
@@ -47,16 +47,19 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // ИСПРАВЛЕНО: Проверяем viewer_context.following (это означает PRO)
-    // Или проверяем наличие active_status === 'active'
-    const hasPro = user.viewer_context?.following || user.active_status === 'active';
+    // Проверяем PRO через viewer_context или power_badge
+    // Starter план дает доступ к расширенным данным
+    const hasPro = !!(
+      user.power_badge || 
+      user.viewer_context?.following ||
+      user.active_status === 'active'
+    );
     
-    console.log('✅ User data:', {
+    console.log('✅ User check:', {
       fid,
       username: user.username,
-      active_status: user.active_status,
       power_badge: user.power_badge,
-      viewer_following: user.viewer_context?.following,
+      active_status: user.active_status,
       hasPro
     });
     
@@ -64,7 +67,8 @@ export default async function handler(req, res) {
       hasPro,
       fid,
       username: user.username,
-      displayName: user.display_name
+      displayName: user.display_name,
+      method: 'neynar-starter'
     });
 
   } catch (error) {
