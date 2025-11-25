@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENDPRO - Free NFT Mint</title>
-      
- <!-- Farcaster Frame Meta Tags -->
+    <title>ENDPRO - NFT Mint</title>
+    
+    <!-- Farcaster Frame Meta Tags -->
     <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://endpro-miniapp-cif4eyqsj-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
-    <meta property="fc:frame:button:1" content="Mint Free NFT" />
+    <meta property="fc:frame:image" content="https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png" />
+    <meta property="fc:frame:button:1" content="Mint ENDPRO NFT" />
     <meta property="fc:frame:button:1:action" content="link" />
-    <meta property="fc:frame:button:1:target" content="https://endpro-miniapp-cif4eyqsj-grigoriys-projects-3e7e97b9.vercel.app" />
+    <meta property="fc:frame:button:1:target" content="https://endpro-miniapp-8hezfxvsu-grigoriys-projects-3e7e97b9.vercel.app" />
     
     <!-- Open Graph -->
-    <meta property="og:title" content="ENDPRO - Free NFT Mint" />
-    <meta property="og:description" content="Mint your free ENDPRO NFT on Base blockchain" />
-    <meta property="og:image" content="https://endpro-miniapp-cif4eyqsj-grigoriys-projects-3e7e97b9.vercel.app/og-image.png" />
-    <meta property="og:type" content="website" />
+    <meta property="og:title" content="ENDPRO - Track Your Farcaster PRO" />
+    <meta property="og:description" content="Mint your dynamic NFT that tracks your Farcaster PRO subscription on Base" />
+    <meta property="og:image" content="https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <!-- Farcaster Frame SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk@latest/dist/index.js"></script>
 
 
     <style>
@@ -27,12 +30,12 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
@@ -42,404 +45,435 @@
             padding: 40px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo {
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             text-align: center;
-            margin-bottom: 30px;
         }
 
-        .logo h1 {
+        h1 {
             font-size: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #667eea;
             margin-bottom: 10px;
         }
 
-        .logo p {
+        .subtitle {
             color: #666;
-            font-size: 16px;
-        }
-
-        .stats {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
             margin-bottom: 30px;
         }
 
-        .stat-item {
+        .info-box {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin: 10px 0;
             font-size: 14px;
         }
 
-        .stat-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-label {
+        .label {
             color: #666;
         }
 
-        .stat-value {
-            font-weight: 600;
+        .value {
+            font-weight: bold;
             color: #333;
-        }
-
-        .wallet-info {
-            background: #e3f2fd;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .wallet-info.connected {
-            display: block;
-        }
-
-        .wallet-address {
-            font-family: monospace;
-            font-size: 12px;
-            word-break: break-all;
-            color: #1976d2;
-        }
-
-        .button {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
-        }
-
-        .button-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .button-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .button-secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e0e0e0;
-        }
-
-        .button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .status {
-            text-align: center;
             padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: none;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
         }
 
         .status.success {
             background: #d4edda;
             color: #155724;
-            display: block;
         }
 
         .status.error {
             background: #f8d7da;
             color: #721c24;
-            display: block;
         }
 
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            display: block;
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .tx-link {
-            color: inherit;
-            text-decoration: underline;
-            font-weight: 600;
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s;
         }
 
-        .farcaster-badge {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+        .btn-primary {
+            background: #667eea;
+            color: white;
         }
 
-        .farcaster-badge img {
-            height: 24px;
-            opacity: 0.6;
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(255,255,255,.3);
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .wallet-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #0066cc;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <h1>ENDPRO</h1>
-            <p>Free NFT Mint on Base</p>
+        <h1>ENDPRO</h1>
+        <p class="subtitle">Dynamic NFT on Base</p>
+
+        <!-- Connect Screen -->
+        <div id="connectScreen">
+            <p style="margin: 20px 0;">Connect your wallet to mint ENDPRO NFT</p>
+            <button class="btn-primary" onclick="connectWallet()">Connect Wallet</button>
         </div>
 
-        <div class="stats" id="stats">
-            <div class="stat-item">
-                <span class="stat-label">Total Whitelist:</span>
-                <span class="stat-value" id="totalWhitelisted">Loading...</span>
+        <!-- Main Screen (hidden by default) -->
+        <div id="mainScreen" class="hidden">
+            <div class="wallet-info" id="walletAddress"></div>
+
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="label">Network:</span>
+                    <span class="value">Base Mainnet</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Price:</span>
+                    <span class="value" id="mintPrice">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Total Minted:</span>
+                    <span class="value" id="totalMinted">0</span>
+                </div>
             </div>
-            <div class="stat-item">
-                <span class="stat-label">Network:</span>
-                <span class="stat-value">Base Mainnet</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Status:</span>
-                <span class="stat-value" id="contractStatus">Checking...</span>
-            </div>
+
+            <div id="statusMessage"></div>
+
+            <button id="mintBtn" class="btn-primary" onclick="mintNFT()" disabled>
+                Mint NFT
+            </button>
+
+            <button class="btn-secondary" onclick="disconnect()">
+                Disconnect
+            </button>
         </div>
 
-        <div class="wallet-info" id="walletInfo">
-            <div class="stat-label" style="margin-bottom: 5px;">Connected Wallet:</div>
-            <div class="wallet-address" id="walletAddress"></div>
-        </div>
-
-        <button class="button button-primary" id="connectButton" onclick="connectWallet()">
-            Connect Wallet
-        </button>
-
-        <button class="button button-primary" id="mintButton" onclick="mintNFT()" style="display: none;" disabled>
-            Mint Free NFT
-        </button>
-
-        <button class="button button-secondary" id="disconnectButton" onclick="disconnectWallet()" style="display: none;">
-            Disconnect
-        </button>
-
-        <div class="status" id="status"></div>
-
-        <div class="farcaster-badge">
-            <p style="font-size: 12px; color: #999; margin-bottom: 10px;">Powered by Farcaster</p>
+        <!-- Loading -->
+        <div id="loader" class="hidden">
+            <div class="loader"></div>
+            <p id="loaderText">Processing...</p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
- <script>
-    // Contract Configuration
-    const CONTRACT_ADDRESS = '0xfcd7fd9cbC1db3f6Df77994e5AC1ef512E5Ac87A';
-    const API_BASE_URL = 'https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app';
-    
+    <script>
+    // Configuration
+    const CONTRACT_ADDRESS = '0x20908B1b760C72d140d3920442772e4ecDa055e0';
     const CONTRACT_ABI = [
-        "function safeMint(string memory uri, bytes32[] calldata merkleProof) external payable",
-        "function hasMinted(address account) external view returns (bool)",
-        "function paused() external view returns (bool)",
-        "function merkleRoot() external view returns (bytes32)"
+        "function safeMint() external payable",
+        "function mintPrice() external view returns (uint256)",
+        "function balanceOf(address) external view returns (uint256)",
+        "function totalSupply() external view returns (uint256)"
     ];
 
-    // Farcaster PRO NFT Configuration
-    const PRO_NFT_CONTRACT = '0x61886e7d61F4086AdA1829880AF440AA0DE3fc96';
-    const PRO_NFT_ABI = [
-        {
-            "inputs": [
-                {"internalType": "address", "name": "account", "type": "address"},
-                {"internalType": "uint256", "name": "id", "type": "uint256"}
-            ],
-            "name": "balanceOf",
-            "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-            "stateMutability": "view",
-            "type": "function"
-        }
-    ];
-
-    // Функция проверки владения PRO NFT
-    async function checkProNFT(address, provider) {
-        try {
-            const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
-            const balance = await proContract.balanceOf(address, 1); // Token ID = 1
-            return balance.gt(0); // Возвращает true если баланс > 0
-        } catch (error) {
-            console.error('PRO NFT check failed:', error);
-            return false;
-        }
-    }
-
+    // State
+    let userAddress = null;
+    let contract = null;
     let provider = null;
     let signer = null;
-    let contract = null;
-    let userAddress = null;
+    let userFid = null;
 
-    // Load Stats (без API - используем статичное значение)
-    async function loadStats() {
-        // Просто показываем заглушку, без вызова API
-        document.getElementById('totalWhitelisted').textContent = '10,000';
+// Farcaster Frame context
+let frameContext = null; // ← НОВАЯ ПЕРЕМЕННАЯ
+
+// Initialize Farcaster Frame
+async function initFrame() { // ← НОВАЯ ФУНКЦИЯ (весь блок)
+    try {
+        if (typeof window.FrameSDK !== 'undefined') {
+            await window.FrameSDK.ready();
+            frameContext = await window.FrameSDK.context();
+            
+            if (frameContext?.user?.fid) {
+                userFid = frameContext.user.fid;
+                console.log('✅ Farcaster FID:', userFid);
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Not running in Farcaster Frame:', error);
     }
-
+}
     // Connect Wallet
-    window.connectWallet = async function() {
+    async function connectWallet() {
         try {
-            showStatus('Connecting wallet...', 'info');
-
-            if (!window.ethereum) {
-                throw new Error('Please install MetaMask or Rabby Wallet');
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask or Rabby Wallet!');
+                return;
             }
 
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send("eth_requestAccounts", []);
-            signer = provider.getSigner();
-            userAddress = await signer.getAddress();
+            showLoader('Connecting wallet...');
+
+            const accounts = await window.ethereum.request({ 
+                method: 'eth_requestAccounts' 
+            });
+
+            userAddress = accounts[0];
+            console.log('Connected:', userAddress);
 
             // Check network
-            const network = await provider.getNetwork();
-            console.log('Connected to network:', network);
-            
-            if (network.chainId !== 8453) {
-                throw new Error('Please switch to Base mainnet (Chain ID: 8453)');
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            if (chainId !== '0x2105') {
+                hideLoader();
+                alert('Please switch to Base Mainnet!');
+                return;
             }
 
+            // Setup provider and contract
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
             contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-            // Update UI
-            document.getElementById('walletAddress').textContent = userAddress;
-            document.getElementById('walletInfo').classList.add('connected');
-            document.getElementById('connectButton').style.display = 'none';
-            document.getElementById('mintButton').style.display = 'block';
-            document.getElementById('disconnectButton').style.display = 'block';
+            hideLoader();
+            showMainScreen();
+            await loadContractInfo();
+            await checkEligibility();
 
-            // Check if already minted
-            const hasMinted = await contract.hasMinted(userAddress);
-            if (hasMinted) {
-                showStatus('You have already minted your NFT!', 'info');
-                document.getElementById('mintButton').disabled = true;
-            } else {
-                document.getElementById('mintButton').disabled = false;
-                showStatus('Connected! Ready to mint.', 'success');
-            }
-
-            // Check contract status
-            const isPaused = await contract.paused();
-            document.getElementById('contractStatus').textContent = isPaused ? 'Paused' : 'Active';
-            
         } catch (error) {
+            hideLoader();
             console.error('Connection error:', error);
-            showStatus(`Error: ${error.message}`, 'error');
+            alert('Failed to connect: ' + error.message);
         }
     }
 
-    // Mint NFT (БЕЗ API - только проверка PRO NFT)
-    window.mintNFT = async function() {
-        if (!userAddress) {
-            showStatus('Please connect wallet first', 'error');
+    // Show main screen
+    function showMainScreen() {
+        document.getElementById('connectScreen').classList.add('hidden');
+        document.getElementById('mainScreen').classList.remove('hidden');
+        document.getElementById('walletAddress').textContent = 
+            `Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+    }
+
+    // Load contract info
+    async function loadContractInfo() {
+        try {
+            const [price, supply] = await Promise.all([
+                contract.mintPrice(),
+                contract.totalSupply()
+            ]);
+
+            document.getElementById('mintPrice').textContent = 
+                ethers.utils.formatEther(price) + ' ETH';
+            document.getElementById('totalMinted').textContent = supply.toString();
+
+        } catch (error) {
+            console.error('Failed to load contract info:', error);
+            document.getElementById('mintPrice').textContent = '0.00033 ETH';
+        }
+    }
+
+    // Check eligibility using backend API
+async function checkEligibility() {
+    try {
+        console.log('🔍 Checking eligibility for:', userAddress);
+        
+        // Проверяем уже заминтил или нет
+        const endproBalance = await contract.balanceOf(userAddress);
+        console.log('✅ ENDPRO balance:', endproBalance.toString());
+
+        const statusDiv = document.getElementById('statusMessage');
+        const mintBtn = document.getElementById('mintBtn');
+
+        if (endproBalance.gt(0)) {
+            statusDiv.innerHTML = '<div class="status success">✅ You already minted ENDPRO NFT!</div>';
+            mintBtn.disabled = true;
             return;
         }
 
-        const mintButton = document.getElementById('mintButton');
+        // Получаем FID (из Frame или используем тестовый)
+        const fid = userFid || 3; // Fallback на тестовый FID
+        console.log('🔍 Using FID:', fid);
         
+        if (!userFid) {
+            console.log('⚠️ No Farcaster FID detected, using test FID');
+        }
+        
+        statusDiv.innerHTML = '<div class="status warning">⏳ Checking Farcaster PRO subscription...</div>';
+        
+        // Проверяем PRO подписку через backend
+        const response = await fetch('https://endpro-nbwjk5om8-grigoriys-projects-3e7e97b9.vercel.app/api/auth/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fid })
+        });
+
+        const data = await response.json();
+        console.log('✅ Backend response:', data);
+
+        if (data.hasPro) {
+            statusDiv.innerHTML = '<div class="status success">✅ Farcaster PRO subscription verified! You can mint.</div>';
+            mintBtn.disabled = false;
+        } else {
+            statusDiv.innerHTML = '<div class="status error">❌ Farcaster PRO subscription required to mint</div>';
+            mintBtn.disabled = true;
+        }
+
+    } catch (error) {
+        console.error('❌ Eligibility check error:', error);
+        document.getElementById('statusMessage').innerHTML = 
+            '<div class="status error">⚠️ Failed to verify eligibility. Please try again.</div>';
+        document.getElementById('mintBtn').disabled = true;
+    }
+}
+
+
+
+
+    // Mint NFT
+    async function mintNFT() {
         try {
-            mintButton.disabled = true;
-            mintButton.innerHTML = '<span class="loading"></span> Checking...';
-            
-            // Проверка владения PRO NFT
-            showStatus('🔍 Checking Farcaster PRO NFT...', 'info');
-            
-            const proContract = new ethers.Contract(PRO_NFT_CONTRACT, PRO_NFT_ABI, provider);
-            const balance = await proContract.balanceOf(userAddress, 1);
-            
-            if (balance.eq(0)) {
-                showStatus('❌ You need Farcaster PRO NFT to mint!<br><br>Get it at <a href="https://warpcast.com/~/settings/pro" target="_blank" class="tx-link">warpcast.com/~/settings/pro</a>', 'error');
-                mintButton.disabled = false;
-                mintButton.innerHTML = 'Mint Free NFT';
-                return;
-            }
-            
-            showStatus('✅ PRO NFT verified! Preparing mint...', 'success');
-            
-            // Минт БЕЗ Merkle Proof (пустой массив)
-            mintButton.innerHTML = '<span class="loading"></span> Minting...';
-            showStatus('Submitting transaction...', 'info');
+            showLoader('Preparing transaction...');
 
-            const tokenURI = "https://endpro-gvnt7p7qq-grigoriys-projects-3e7e97b9.vercel.app/metadata.json";
+            const mintPrice = await contract.mintPrice();
+            console.log('💰 Mint price:', ethers.utils.formatEther(mintPrice), 'ETH');
 
-            // Минт с ПУСТЫМ массивом proof (без whitelist)
-            const tx = await contract.safeMint(tokenURI, [], {
-                gasLimit: 300000
+            showLoader('Confirm transaction in wallet...');
+
+            const tx = await contract.safeMint({ 
+                value: mintPrice,
+                gasLimit: 200000
             });
             
-            showStatus('⏳ Waiting for confirmation...', 'info');
-            
+            console.log('✅ Transaction sent:', tx.hash);
+
+            showLoader('Waiting for confirmation...');
+
             const receipt = await tx.wait();
-            
-            const txLink = `https://basescan.org/tx/${receipt.transactionHash}`;
-            showStatus(`🎉 Success! <a href="${txLink}" target="_blank" class="tx-link">View on BaseScan</a>`, 'success');
-            
-            mintButton.innerHTML = '✓ Minted!';
-            mintButton.disabled = true;
-            
+            console.log('✅ Transaction confirmed!', receipt);
+
+            hideLoader();
+            alert('🎉 NFT minted successfully!\n\nTransaction: ' + tx.hash);
+
+            // Reload page
+            window.location.reload();
+
         } catch (error) {
-            console.error('Mint error:', error);
-            let errorMsg = error.message;
-            
-            if (errorMsg.includes('user rejected')) {
-                errorMsg = 'Transaction cancelled';
-            } else if (errorMsg.includes('MerkleProof')) {
-                errorMsg = 'Your smart contract requires whitelist. Please set up API or disable whitelist in contract.';
+            hideLoader();
+            console.error('❌ Mint error:', error);
+
+            if (error.code === 4001) {
+                alert('Transaction cancelled');
+            } else if (error.code === -32000) {
+                alert('Insufficient funds for gas + value');
+            } else {
+                alert('Mint failed: ' + error.message);
             }
-            
-            showStatus(`❌ Error: ${errorMsg}`, 'error');
-            
-            mintButton.disabled = false;
-            mintButton.innerHTML = 'Mint Free NFT';
         }
     }
 
-    // Disconnect Wallet
-    window.disconnectWallet = function() {
+    // Disconnect
+    function disconnect() {
         userAddress = null;
+        contract = null;
         provider = null;
         signer = null;
-        contract = null;
-        
-        document.getElementById('walletInfo').classList.remove('connected');
-        document.getElementById('connectButton').style.display = 'block';
-        document.getElementById('mintButton').style.display = 'none';
-        document.getElementById('disconnectButton').style.display = 'none';
-        document.getElementById('status').style.display = 'none';
+
+        document.getElementById('mainScreen').classList.add('hidden');
+        document.getElementById('connectScreen').classList.remove('hidden');
     }
 
-    // Show Status
-    function showStatus(message, type) {
-        const statusEl = document.getElementById('status');
-        statusEl.className = `status ${type}`;
-        statusEl.innerHTML = message;
+    // Loader functions
+    function showLoader(text) {
+        document.getElementById('loaderText').textContent = text;
+        document.getElementById('loader').classList.remove('hidden');
+        document.getElementById('connectScreen').classList.add('hidden');
+        document.getElementById('mainScreen').classList.add('hidden');
     }
 
-    // Initialize on load
+    function hideLoader() {
+        document.getElementById('loader').classList.add('hidden');
+    }
+
+    // Check if already connected on page load
     window.addEventListener('load', async () => {
-        await loadStats();
+    await initFrame();
+        if (typeof window.ethereum !== 'undefined') {
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            
+            if (accounts.length > 0) {
+                userAddress = accounts[0];
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                
+                showMainScreen();
+                await loadContractInfo();
+                await checkEligibility();
+            }
+        }
     });
+
+    // Handle account changes
+    if (typeof window.ethereum !== 'undefined') {
+        window.ethereum.on('accountsChanged', (accounts) => {
+            if (accounts.length === 0) {
+                disconnect();
+            } else {
+                window.location.reload();
+            }
+        });
+
+        window.ethereum.on('chainChanged', () => {
+            window.location.reload();
+        });
+    }
 </script>
 
 </body>
