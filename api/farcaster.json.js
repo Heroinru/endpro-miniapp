@@ -1,9 +1,9 @@
 export default function handler(req, res) {
   const manifest = {
     accountAssociation: {
-      header: "TEMPORARY_PLACEHOLDER",
-      payload: "TEMPORARY_PLACEHOLDER",
-      signature: "TEMPORARY_PLACEHOLDER"
+      header: "eyJmaWQiOjIzNTAsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhCRDc4NEM2MWZjMzQ0MUJkNTE1MEE0QjFDNkM0OTBmOTRlNDgxNjFkIn0",
+      payload: "eyJkb21haW4iOiJlbmRwcm8tbWluaWFwcC52ZXJjZWwuYXBwIn0",
+      signature: "4/X3Ycwdrb7PeecqFvWJRBqwQkt00Zz/Z/abQUREkiAp1sLimQ0erRdOPvWWaLZGoie3PhjO/HdC85QbsXxgdhs="
     },
     frame: {
       version: "next",
@@ -20,6 +20,7 @@ export default function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.status(200).json(manifest);
 }
+
 
 
 
