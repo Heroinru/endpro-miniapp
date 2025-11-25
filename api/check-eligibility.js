@@ -27,7 +27,6 @@ export default async function handler(req, res) {
 
     console.log('🔍 Checking PRO subscription for FID:', fid);
 
-    // Используем Neynar API для получения полной информации о пользователе
     const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
       headers: {
         'accept': 'application/json',
@@ -36,7 +35,7 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      console.error('❌ Neynar API error:', response.status, await response.text());
+      console.error('❌ Neynar API error:', response.status);
       return res.status(500).json({ error: 'Failed to fetch user data' });
     }
 
@@ -47,19 +46,14 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Проверяем PRO через viewer_context или power_badge
-    // Starter план дает доступ к расширенным данным
-    const hasPro = !!(
-      user.power_badge || 
-      user.viewer_context?.following ||
-      user.active_status === 'active'
-    );
+    // ПРАВИЛЬНАЯ ПРОВЕРКА: используем поле "pro"
+    const hasPro = user.pro?.status === 'subscribed';
     
-    console.log('✅ User check:', {
+    console.log('✅ PRO check:', {
       fid,
       username: user.username,
-      power_badge: user.power_badge,
-      active_status: user.active_status,
+      pro_status: user.pro?.status,
+      expires_at: user.pro?.expires_at,
       hasPro
     });
     
@@ -68,7 +62,9 @@ export default async function handler(req, res) {
       fid,
       username: user.username,
       displayName: user.display_name,
-      method: 'neynar-starter'
+      proStatus: user.pro?.status,
+      expiresAt: user.pro?.expires_at,
+      method: 'neynar-pro-field'
     });
 
   } catch (error) {
