@@ -1,23 +1,18 @@
 export default function handler(req, res) {
   const manifest = {
     accountAssociation: {
-      header: "БУДЕТ_ОБНОВЛЕНО",
-      payload: "БУДЕТ_ОБНОВЛЕНО", 
-      signature: "БУДЕТ_ОБНОВЛЕНО"
+      header: "TEMPORARY_PLACEHOLDER",
+      payload: "TEMPORARY_PLACEHOLDER",
+      signature: "TEMPORARY_PLACEHOLDER"
     },
     frame: {
       version: "next",
-      imageUrl: "https://endpro-miniapp.vercel.app/og-image.png",
-      button: {
-        title: "Mint ENDPRO NFT",
-        action: {
-          type: "launch_frame",
-          name: "ENDPRO Dynamic NFT",
-          url: "https://endpro-miniapp.vercel.app",
-          splashImageUrl: "https://endpro-miniapp.vercel.app/splash.png",
-          splashBackgroundColor: "#0052FF"
-        }
-      }
+      name: "ENDPRO Dynamic NFT",
+      iconUrl: "https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png",
+      splashImageUrl: "https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png",
+      splashBackgroundColor: "#667eea",
+      homeUrl: "https://endpro-miniapp.vercel.app",
+      webhookUrl: "https://endpro-miniapp.vercel.app/api/webhook"
     }
   };
 
@@ -25,5 +20,6 @@ export default function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.status(200).json(manifest);
 }
+
 
 
