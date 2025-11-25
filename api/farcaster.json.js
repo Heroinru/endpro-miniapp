@@ -1,22 +1,28 @@
 export default function handler(req, res) {
   const manifest = {
     accountAssociation: {
-      header: "eyJmaWQiOjYwNTM5MCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDA3RTZFMUY2MkMzNjREQzk5Qzg3NTc4QzJENzA5QTY3M0ExMzc0NjYifQ",
-      payload: "eyJkb21haW4iOiJlbmRwcm8tbWluaWFwcC04aGV6Znh2c3UtZ3JpZ29yaXlzLXByb2plY3RzLTNlN2U5N2I5LnZlcmNlbC5hcHAifQ",
-      signature: "MHhiNzY4ZjE5ZTczMzYxZTg0NTk1YzI4YWVlNGI5OGM4NjcxNjA0MmEyYzJhNDNmODE3YzkyNGY3ZDk5ZmU0ZTE4NjM5ZWQ2ZWZlNDZiYjJjNjJlODQ5NjY4NGIzNjc3OTlhZDc2NmQ2MGM3ZjZhMWJmYzA4NmUxMjJiM2JmMWRmNzFi"
+      header: "eyJmaWQiOjIzNTAsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg1RjEyMjRjMGFiN2E1NTBEN2U1NDBDODQ1ZmVhRDMwMjMxNTFCRTkxIn0",
+      payload: "eyJkb21haW4iOiJlbmRwcm8tbWluaWFwcC1yZWY5dzczdXItZ3JpZ29yaXlzLXByb2plY3RzLTNlN2U5N2I5LnZlcmNlbC5hcHAifQ",
+      signature: "1GrNT/kLueYH+89arQ30vsQMuNpAhVD6Zv535laV1tt/ymmLbEewSUn7j0l67/y5UZvycMTi11RMM7OJqjrBgxw="
     },
     frame: {
       version: "next",
-      name: "ENDPRO",
-      iconUrl: "https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png",
-      splashImageUrl: "https://gateway.pinata.cloud/ipfs/bafybeiaewipv4zf7votgkjfizmgmat6k6jjz4ofun5ia2nyncfr2vvmibe/active.png",
-      splashBackgroundColor: "#667eea",
-      homeUrl: "https://endpro-miniapp-8hezfxvsu-grigoriys-projects-3e7e97b9.vercel.app",
-      webhookUrl: "https://endpro-miniapp-8hezfxvsu-grigoriys-projects-3e7e97b9.vercel.app/api/webhook"
+      imageUrl: "https://endpro-miniapp-ref9w73ur-grigoriys-projects-3e7e97b9.vercel.app/og-image.png",
+      button: {
+        title: "Mint ENDPRO NFT",
+        action: {
+          type: "launch_frame",
+          name: "ENDPRO Dynamic NFT",
+          url: "https://endpro-miniapp-ref9w73ur-grigoriys-projects-3e7e97b9.vercel.app",
+          splashImageUrl: "https://endpro-miniapp-ref9w73ur-grigoriys-projects-3e7e97b9.vercel.app/splash.png",
+          splashBackgroundColor: "#0052FF"
+        }
+      }
     }
   };
 
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.status(200).json(manifest);
 }
 
